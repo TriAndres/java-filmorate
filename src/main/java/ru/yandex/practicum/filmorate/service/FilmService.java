@@ -33,8 +33,8 @@ public class FilmService {
             log.error("Не указан id");
             throw new ValidationException("Id должен быть указан");
         }
-        if (filmStorage.containsKey(newFilm.getId())) {
-            Film oldFilm = filmStorage.getById(newFilm.getId());
+        if (filmStorage.findAll().containsKey(newFilm.getId())) {
+            Film oldFilm = filmStorage.findById(newFilm.getId());
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
@@ -46,27 +46,27 @@ public class FilmService {
     }
 
     public Collection<Film> findAllFilm() {
-        return filmStorage.getByAll();
+        return filmStorage.findAll().values();
     }
 
     public Film addLike(Long id, Long userId) {
-        if (!filmStorage.containsKey(id)) {
+        if (!filmStorage.findAll().containsKey(id)) {
             log.error("Отсутствует фильм");
             throw new FilmDoesNotExistException("Отсутствует фильм");
         }
-        if (!userStorage.containsKey(userId)) {
+        if (!userStorage.findAll().containsKey(userId)) {
             log.error("Отсутствует пользователь");
             throw new FilmDoesNotExistException("Отсутствует пользователь");
         }
-        Film film = filmStorage.getById(id);
+        Film film = filmStorage.findById(id);
         film.addLike(userId);
         log.info("Лайк добавлен {}", film.getLikes());
         return film;
     }
 
     public Film deleteLike(long id, long userId) {
-        Film film = filmStorage.getById(id);
-        User user = userStorage.getById(userId);
+        Film film = filmStorage.findById(id);
+        User user = userStorage.findById(userId);
         if (film == null || user == null) {
             log.error("Отсутствует пользователь");
             throw new UserDoesNotExistException("Отсутствует пользователь");
@@ -77,7 +77,7 @@ public class FilmService {
     }
 
     public List<Film> getPopular(int count) {
-        return filmStorage.getByAll().stream()
+        return filmStorage.findAll().values().stream()
                 .filter(film -> film.getLikes() != null)
                 .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
                 .limit(count)
@@ -85,7 +85,7 @@ public class FilmService {
     }
 
     private Long getNextId() {
-        long currentMaxId = filmStorage.getByAll()
+        long currentMaxId = filmStorage.findAll().values()
                 .stream()
                 .mapToLong(Film::getId)
                 .max()

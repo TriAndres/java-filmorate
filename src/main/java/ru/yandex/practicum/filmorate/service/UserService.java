@@ -41,8 +41,8 @@ public class UserService {
             log.error("Id должен быть указан");
             throw new ValidationException("Id должен быть указан");
         }
-        if (userStorage.containsKey(newUser.getId())) {
-            User oldUser = userStorage.getById(newUser.getId());
+        if (userStorage.findAll().containsKey(newUser.getId())) {
+            User oldUser = userStorage.findById(newUser.getId());
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
             oldUser.setName(newUser.getName());
@@ -55,16 +55,16 @@ public class UserService {
 
     @GetMapping
     public Collection<User> findAllUser() {
-        return userStorage.getByAll();
+        return userStorage.findAll().values();
     }
 
     public User addFriend(long id, long friendId) {
-        if (!(userStorage.containsKey(id) && userStorage.containsKey(friendId))) {
+        if (!(userStorage.findAll().containsKey(id) && userStorage.findAll().containsKey(friendId))) {
             log.error("Отсутствует пользователь");
             throw new UserDoesNotExistException("Отсутствует пользователь");
         }
-        User user = userStorage.getById(id);
-        User userFriend = userStorage.getById(friendId);
+        User user = userStorage.findById(id);
+        User userFriend = userStorage.findById(friendId);
         log.info("Пользователи: 1{},2{}", user, userFriend);
         userFriend.addFriend(id);
         user.addFriend(friendId);
@@ -73,11 +73,11 @@ public class UserService {
     }
 
     public User removeFriend(Long id, Long friendId) {
-        if (!(userStorage.containsKey(id) && userStorage.containsKey(friendId))) {
+        if (!(userStorage.findAll().containsKey(id) && userStorage.findAll().containsKey(friendId))) {
             throw new UserDoesNotExistException("Отсутствует пользователь");
         }
-        User user = userStorage.getById(id);
-        User userFriend = userStorage.getById(friendId);
+        User user = userStorage.findById(id);
+        User userFriend = userStorage.findById(friendId);
         log.info("Пользователи: 1{},2{}", user, userFriend);
         user.removeFriend(friendId);
         userFriend.removeFriend(id);
@@ -87,7 +87,7 @@ public class UserService {
     }
 
     public List<User> getAllFriends(long id) {
-        User user = userStorage.getById(id);
+        User user = userStorage.findById(id);
         if (user == null) {
             throw new UserDoesNotExistException("Такого пользователя нет");
         }
@@ -95,25 +95,25 @@ public class UserService {
         log.info("Список друзей {}", userFriends);
 
         return userFriends.stream()
-                .map(userStorage::getById)
+                .map(userStorage::findById)
                 .collect(Collectors.toList());
     }
 
     public List<User> getMutualFriends(long id, long otherId) {
-        User user = userStorage.getById(id);
-        User userFriend = userStorage.getById(otherId);
+        User user = userStorage.findById(id);
+        User userFriend = userStorage.findById(otherId);
         if (user == null || userFriend == null) {
             log.error("Нету одного из пользователей");
             throw new UserDoesNotExistException("Нету одного из пользователей ");
         }
         return user.getFriends().stream()
                 .filter(idUser -> userFriend.getFriends().contains(idUser))
-                .map(userStorage::getById)
+                .map(userStorage::findById)
                 .collect(Collectors.toList());
     }
 
     private Long getNextId() {
-        long currentMaxId = userStorage.getByAll()
+        long currentMaxId = userStorage.findAll().values()
                 .stream()
                 .mapToLong(User::getId)
                 .max()

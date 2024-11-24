@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,27 +18,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean containsKey(long id) {
-        return films.containsKey(id);
-    }
-
-    @Override
-    public Film getById(long userId) {
+    public Film findById(long userId) {
         return films.get(userId);
     }
 
     @Override
-    public Collection<Film> getByAll() {
-        return films.values();
+    public Map<Long, Film> findAll() {
+        return films;
     }
 
     @Override
-    public void deleteId(long id) {
+    public void deleteById(long id) {
         films.remove(id);
-    }
-
-    @Override
-    public void deleteAll() {
-        films.clear();
     }
 }

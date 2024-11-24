@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,27 +16,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean containsKey(long id) {
-        return users.containsKey(id);
-    }
-
-    @Override
-    public User getById(long userId) {
+    public User findById(long userId) {
         return users.get(userId);
     }
 
     @Override
-    public Collection<User> getByAll() {
-        return users.values();
+    public Map<Long, User> findAll() {
+        return users;
     }
 
     @Override
-    public void deleteId(long id) {
+    public void deleteById(long id) {
         users.remove(id);
-    }
-
-    @Override
-    public void deleteAll() {
-        users.clear();
     }
 }
