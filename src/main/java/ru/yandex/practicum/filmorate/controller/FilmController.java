@@ -17,11 +17,6 @@ import java.util.Map;
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
-    @GetMapping
-    public Collection<Film> findAll() {
-        return films.values();
-    }
-
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("create() Film.");
@@ -48,6 +43,12 @@ public class FilmController {
         log.error("update() newFilm is id = {} not", newFilm.getId());
         throw new FilmDoesNotExistException("update() newFilm is id = " + newFilm.getId() + " not");
     }
+
+    @GetMapping
+    public Collection<Film> findAll() {
+        return films.values();
+    }
+
 
     private long getNextId() {
         long currentId = films.keySet()

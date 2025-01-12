@@ -17,11 +17,6 @@ import java.util.Map;
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
-    @GetMapping
-    public Collection<User> findAll() {
-        return users.values();
-    }
-
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         if (user.getName() == null || user.getName().isBlank()) {
@@ -47,10 +42,15 @@ public class UserController {
             oldUser.setLogin(newUser.getLogin());
             oldUser.setName(oldUser.getName());
             oldUser.setBirthday(newUser.getBirthday());
-            return newUser;
+            return oldUser;
         }
         log.error("update() User is id = {} not", newUser.getId());
         throw new UserDoesNotExistException("update() User is id = " + newUser.getId() + " not");
+    }
+
+    @GetMapping
+    public Collection<User> findAll() {
+        return users.values();
     }
 
     private long getNextId() {
