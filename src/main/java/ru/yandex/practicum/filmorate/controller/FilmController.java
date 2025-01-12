@@ -12,50 +12,50 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RestController
 @RequestMapping("/films")
+@RestController
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        log.info("create() Film.");
+    public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("Добавление нового фильма.");
         film.setId(getNextId());
         films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
+    public Film updateFilm(@Valid @RequestBody Film newFilm) {
         if (newFilm.getId() == null) {
-            log.error("newFilm id not null");
-            throw new ValidationException("newFilm id not null");
+            log.error("Не указан id");
+            throw new ValidationException("Id должен быть указан");
         }
         if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
-            log.info("update() oldFilm.");
+            log.info("Обновление фильма.");
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
-            oldFilm.setDescription(newFilm.getDescription());
+            oldFilm.setDuration(newFilm.getDuration());
             return oldFilm;
         }
-        log.error("update() newFilm is id = {} not", newFilm.getId());
-        throw new FilmDoesNotExistException("update() newFilm is id = " + newFilm.getId() + " not");
+        log.error("Фильм с id = {} не найден", newFilm.getId());
+        throw new FilmDoesNotExistException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public Collection<Film> findAllFilm() {
+        log.info("Вывод список фильмов.");
         return films.values();
     }
 
-
-    private long getNextId() {
-        long currentId = films.keySet()
+    private Long getNextId() {
+        long currentMaxId = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()
                 .orElse(0);
-        return ++currentId;
+        return ++currentMaxId;
     }
 }

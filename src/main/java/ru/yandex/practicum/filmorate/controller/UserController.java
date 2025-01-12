@@ -12,53 +12,54 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RestController
 @RequestMapping("/users")
+@RestController
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             log.info("Name для отображения не может быть пустым — в таком случае будет использован логин");
             user.setName(user.getLogin());
         }
-        log.info("create() User");
+        log.info("Добавление нового пользователя.");
         user.setId(getNextId());
         users.put(user.getId(), user);
         return user;
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
+    public User updateUser(@Valid @RequestBody User newUser) {
         if (newUser.getId() == null) {
-            log.error("update() newUser id not null");
-            throw new ValidationException("update() newUser id not null");
+            log.error("Id должен быть указан");
+            throw new ValidationException("Id должен быть указан");
         }
         if (users.containsKey(newUser.getId())) {
+            log.info("Обновление пользователя.");
             User oldUser = users.get(newUser.getId());
-            log.info("update() oldUser");
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
-            oldUser.setName(oldUser.getName());
+            oldUser.setName(newUser.getName());
             oldUser.setBirthday(newUser.getBirthday());
-            return oldUser;
+            return newUser;
         }
-        log.error("update() User is id = {} not", newUser.getId());
-        throw new UserDoesNotExistException("update() User is id = " + newUser.getId() + " not");
+        log.error("Пользователь с id = {} не найден", newUser.getId());
+        throw new UserDoesNotExistException("Пользователь с id = " + newUser.getId() + " не найден");
     }
 
     @GetMapping
-    public Collection<User> findAll() {
+    public Collection<User> findAllUser() {
+        log.info("Вывод список пользователей.");
         return users.values();
     }
 
-    private long getNextId() {
-        long currentId = users.keySet()
+    private Long getNextId() {
+        long currentMaxId = users.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()
                 .orElse(0);
-        return ++currentId;
+        return ++currentMaxId;
     }
 }
