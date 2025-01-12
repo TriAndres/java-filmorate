@@ -24,6 +24,10 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            log.info("Name для отображения не может быть пустым — в таком случае будет использован логин");
+            user.setName(user.getLogin());
+        }
         log.info("create() User");
         user.setId(getNextId());
         users.put(user.getId(), user);
