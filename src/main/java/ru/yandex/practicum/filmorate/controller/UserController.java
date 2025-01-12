@@ -46,7 +46,8 @@ public class UserController {
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
             oldUser.setName(oldUser.getName());
-            return oldUser;
+            oldUser.setBirthday(newUser.getBirthday());
+            return newUser;
         }
         log.error("update() User is id = {} not", newUser.getId());
         throw new UserDoesNotExistException("update() User is id = " + newUser.getId() + " not");
