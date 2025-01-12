@@ -4,7 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateValidation;
 
 import java.time.LocalDate;
 
@@ -22,7 +26,7 @@ public class Film {
     @Size(max = 200)
     private String description;
     @NotNull
-    //@ReleaseDateValidation  дата релиза — не раньше 28 декабря 1895 года;
+    @ReleaseDateValidation
     private LocalDate releaseDate;
     @NotNull
     @Positive
