@@ -42,6 +42,7 @@ public class FilmService {
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
             filmStorage.save(newFilm);
+            return oldFilm;
         }
         log.error("Фильм с id = {} не найден", newFilm.getId());
         throw new FilmDoesNotExistException("Фильм с id = " + newFilm.getId() + " не найден");
